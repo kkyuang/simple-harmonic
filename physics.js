@@ -8,11 +8,14 @@ const y_max = 3;
 const screen_x = 400;
 const screen_y = 300;
 
-const deltatime = 0.03;
+const deltatime = 0.01;
+
+//절대 시간
+var SHM_time = 0
 
 //그래프 관련 상수
 const g_x_min = 0
-const g_x_max = 100
+const g_x_max = 20
 const g_y_min = -4
 const g_y_max = 4
 const g_screen_x = 400;
@@ -23,34 +26,68 @@ $(document).ready(() => {
     var canvas = $("#shm_cvs")[0];
     if(canvas.getContext){
         var ctx = canvas.getContext("2d");
-        playSHM();
+        //playSHM();
     }
 })
 
+var SHMinterval
+var isStarted = false, isPaused = false
 function playSHM(){
+    if(isStarted) return 0;
+    if(!isPaused) SHM_time = 0
+    isStarted = true
     var canvas = $("#shm_cvs")[0];
     if(canvas.getContext){
         var ctx = canvas.getContext("2d");
         //물리량 변수
-        var acc = 0;
-        var velocity = 0;
-        var x = 3;
-        var m = 1;
-        var k = 1;
-        var t = 0;
-        var r = 10;
-        setInterval(() => {
-            acc = -(k*x)/m - (velocity)*r*deltatime
+        var acc = Number($("#a_input").val());
+        var velocity = Number($("#v_input").val());
+        var x = Number($("#x_input").val());
+        var m = Number($("#m_input").val());
+        var k = Number($("#k_input").val());
+        var r = Number($("#r_input").val());
+
+        SHMinterval = setInterval(SHMintervalF, deltatime*1000)
+
+        function SHMintervalF(){
+            screenClear(canvas);
+            drawCircle(ctx, x, 0)
+            pointGraph(SHM_time, x)
+            acc = (-(k*x) - (velocity)*r*deltatime)/m
             velocity += acc * deltatime
             x += velocity * deltatime
-            t += deltatime
-            screenClear(ctx, canvas);
-            drawCircle(ctx, x, 0)
-            pointGraph(t, x)
-        }, deltatime)
+            SHM_time += deltatime
+            $("#a_input").val(Math.round(acc*100)/100)
+            $("#v_input").val(Math.round(velocity*100)/100)
+            $("#x_input").val(Math.round(x*100)/100)
+            $("#time").html(Math.round(SHM_time*100) / 100)
+        }
     }
 }
 
+function stopSHM(){
+    isStarted = false
+
+    clearInterval(SHMinterval)
+    var graph = $("#graph_cvs")[0];
+    var canvas = $("#shm_cvs")[0];
+    screenClear(graph);
+    screenClear(canvas);
+}
+
+function pauseSHM(){
+    if(!isPaused){
+        isPaused = true
+        clearInterval(SHMinterval)
+        $("#pause_btn").html("재시작!")
+    }
+    else{
+        isStarted = false
+        playSHM()
+        isPaused = false
+        $("#pause_btn").html("일시 정지!")
+    }
+}
 
 
 //화면삭제 테스트
@@ -78,7 +115,8 @@ function drawCircle(ctx, x, y){
 }
 
 //화면 초기화
-function screenClear(ctx, cnvs){
+function screenClear(cnvs){
+    var ctx = cnvs.getContext("2d");
     ctx.clearRect(0, 0, cnvs.width, cnvs.height);
     ctx.beginPath();
 }

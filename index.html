@@ -12,5 +12,19 @@
         <canvas id="graph_cvs" width="400" height="300" style="background-color: #eeeeee;">
             
         </canvas>
+
+        <div id="setting_pannel">
+            <input id="k_input" type="text" placeholder="k" value="10">
+            <input id="m_input" type="text" placeholder="m" value="1">            
+            <input id="r_input" type="text" placeholder="γ" value="30"><br>   
+            <input id="a_input" type="text" placeholder="a" value="0">
+            <input id="v_input" type="text" placeholder="v" value="0">            
+            <input id="x_input" type="text" placeholder="x" value="3">   
+            <span id="time"></span>
+            <br>
+            <button onclick="playSHM()">시작!</button>
+            <button id="pause_btn" onclick="pauseSHM()">일시 정지!</button>
+            <button onclick="stopSHM()">종료!</button>
+        </div>
     </body>
 </html>
