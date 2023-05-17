@@ -10,6 +10,14 @@ const screen_y = 300;
 
 const deltatime = 0.03;
 
+//그래프 관련 상수
+const g_x_min = 0
+const g_x_max = 100
+const g_y_min = -4
+const g_y_max = 4
+const g_screen_x = 400;
+const g_screen_y = 300;
+
 $(document).ready(() => {
     console.log("gg")
     var canvas = $("#shm_cvs")[0];
@@ -29,16 +37,21 @@ function playSHM(){
         var x = 3;
         var m = 1;
         var k = 1;
+        var t = 0;
+        var r = 10;
         setInterval(() => {
-            acc = -(k*x)/m
+            acc = -(k*x)/m - (velocity)*r*deltatime
             velocity += acc * deltatime
             x += velocity * deltatime
-
+            t += deltatime
             screenClear(ctx, canvas);
             drawCircle(ctx, x, 0)
+            pointGraph(t, x)
         }, deltatime)
     }
 }
+
+
 
 //화면삭제 테스트
 $(document).mousedown(() => {
@@ -68,4 +81,15 @@ function drawCircle(ctx, x, y){
 function screenClear(ctx, cnvs){
     ctx.clearRect(0, 0, cnvs.width, cnvs.height);
     ctx.beginPath();
+}
+
+//그래프 그리기
+function pointGraph(x, y){
+    var graph = $("#graph_cvs")[0];
+    var g_ctx = graph.getContext("2d");
+    xcv = ((x - g_x_min ) / (g_x_max - g_x_min)) * g_screen_x
+    ycv = (1 - ((y - g_y_min ) / (g_y_max - g_y_min))) * g_screen_y
+    g_ctx.arc(xcv, ycv, 2, 0, 2*Math.PI);
+    g_ctx.fill();
+    g_ctx.beginPath();
 }
